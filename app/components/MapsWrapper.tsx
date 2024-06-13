@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet";
 import eventsData from "../historicalEvents";
 import { useState } from "react";
+import FlyToMarker from "./FlyToMarker";
 
 export interface HistoricalEvent {
   id: number;
@@ -105,6 +106,10 @@ const MapsWrapper = () => {
                 </span>
               </button>
             </Popup>
+          )}
+
+          {activeEvent && (
+            <FlyToMarker position={activeEvent.position} zoomLevel={15} />
           )}
         </MapContainer>
       </div>
