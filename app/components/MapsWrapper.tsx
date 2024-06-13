@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet";
 import eventsData from "../historicalEvents";
+import { useState } from "react";
 
 export interface HistoricalEvent {
   id: number;
@@ -30,6 +31,24 @@ const MapsWrapper = () => {
     iconAnchor: [12, 41],
   });
 
+  const [activeEvent, setActiveEvent] = useState<HistoricalEvent | null>(null);
+  const [favourites, setFavourites] = useState<number[]>(() => {
+    const savedFavourites = localStorage.getItem("favourites");
+
+    return savedFavourites ? JSON.parse(savedFavourites) : [];
+  });
+
+  const handleFavouriteClick = (eventId: number) => {
+    let updatedFavourites = favourites.filter((id) => id !== eventId);
+
+    if (!favourites.includes(eventId)) {
+      updatedFavourites = [eventId, ...updatedFavourites];
+    }
+
+    setFavourites(updatedFavourites);
+    localStorage.setItem("favourites", JSON.stringify(updatedFavourites));
+  };
+
   return (
     <div className="p-8 w-full h-full">
       <div className="flex flex-col w-full h-full">
@@ -42,27 +61,43 @@ const MapsWrapper = () => {
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {eventsData.map((event) => (
-            <Marker key={event.id} position={event.position} icon={icon}>
-              <Popup>
-                {/* Popup Inner */}
-                <div className="text-xl">
-                  {/* Title */}
-                  {/* i.pt-[0.15rem].items-start.text-2xl */}
-                  <h2 className="relative font-bold mb-2 flex items-center gap-2 text-[#6fcf97] after:absolute after:content-[''] after:w-[35%] after:h-[2px] after:bg-[#6fcf97] after:-bottom-[14px] after:left-0">
-                    {event.title}
-                  </h2>
-                </div>
-                {/* Description */}
-                <p className="text-white text-lg">{event.description}</p>
-                <button className="font-semibold !text-[#6fcf97] flex gap-2 items-center">
-                  <span className="flex items-center text-lg gap-2">
-                    {emptyStar}
-                    Favorite
-                  </span>
-                </button>
-              </Popup>
-            </Marker>
+            <Marker
+              key={event.id}
+              position={event.position}
+              icon={icon}
+              eventHandlers={{
+                click: () => {
+                  setActiveEvent(event);
+                },
+              }}
+            />
           ))}
+          {activeEvent && (
+            <Popup position={activeEvent.position}>
+              {/* Popup Inner */}
+              <div className="text-xl">
+                {/* Title */}
+                {/* i.pt-[0.15rem].items-start.text-2xl */}
+                <h2 className="relative font-bold mb-2 flex items-center gap-2 text-[#6fcf97] after:absolute after:content-[''] after:w-[35%] after:h-[2px] after:bg-[#6fcf97] after:-bottom-[14px] after:left-0">
+                  {activeEvent.title}
+                </h2>
+              </div>
+              {/* Description */}
+              <p className="text-white text-lg">{activeEvent.description}</p>
+              <button
+                className="font-semibold !text-[#6fcf97] flex gap-2 items-center"
+                onClick={() => handleFavouriteClick(activeEvent.id)}
+              >
+                <span className="flex items-center text-lg gap-2">
+                  {favourites.includes(activeEvent.id) ? (
+                    <span>{fullStar} Unfavourite</span>
+                  ) : (
+                    <span>{fullStar} Favourite</span>
+                  )}
+                </span>
+              </button>
+            </Popup>
+          )}
         </MapContainer>
       </div>
     </div>
