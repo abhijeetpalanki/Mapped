@@ -49,9 +49,17 @@ const MapsWrapper = () => {
     localStorage.setItem("favourites", JSON.stringify(updatedFavourites));
   };
 
+  const handleFavouritedListItemClick = (eventId: number) => {
+    const event = eventsData.find((event) => event.id === eventId);
+
+    if (event) {
+      setActiveEvent(event);
+    }
+  };
+
   return (
-    <div className="p-8 w-full h-full">
-      <div className="flex flex-col w-full h-full">
+    <div className="p-8 w-full h-full flex gap-6">
+      <div className="flex flex-col w-4/5 h-full">
         <div className="h-12"></div>
 
         <MapContainer
@@ -99,6 +107,33 @@ const MapsWrapper = () => {
             </Popup>
           )}
         </MapContainer>
+      </div>
+
+      {/* Favourited Events */}
+      <div className="liked-events flex-1 py-4 px-8 rounded-2xl bg-[#262626] shadow-[0_0_15px_rgba(0,0,0,0.1)] border-2 border-[#363636] text-white overflow-y-auto">
+        <h2 className="font-bold flex  items-center text-2xl mb-4 gap-1">
+          <i className="fa-solid fa-star" style={{ color: "#fdc401" }}></i>
+          Favourited Events
+        </h2>
+        <ul className="">
+          {favourites
+            .map((id) => {
+              return eventsData.find((event) => event.id === id);
+            })
+            .map((event) => {
+              return (
+                <li
+                  className="p-4 mb-4 rounded-lg bg-[#454545] shadow-[0_0_15px_rgba(0,0,0,0.1)] font-medium text-white cursor-pointer"
+                  key={event?.id}
+                  onClick={() =>
+                    handleFavouritedListItemClick(event?.id as number)
+                  }
+                >
+                  <h3>{event?.title}</h3>
+                </li>
+              );
+            })}
+        </ul>
       </div>
     </div>
   );
