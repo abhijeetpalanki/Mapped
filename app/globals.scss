@@ -24,3 +24,10 @@
     width: 4px;
   }
 }
+
+@media (max-width: 800px) {
+  .leaflet-popup-content {
+    width: 220px !important;
+    height: 150px !important;
+  }
+}

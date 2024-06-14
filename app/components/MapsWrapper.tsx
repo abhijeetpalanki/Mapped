@@ -16,7 +16,7 @@ export interface HistoricalEvent {
   category: string;
 }
 
-const defaultPosition: [number, number] = [51.505, -0.09];
+const defaultPosition: [number, number] = [32.77, -96.79];
 
 const emptyStar = <i className="fa-regular fa-star"></i>;
 const fullStar = (
@@ -61,8 +61,8 @@ const MapsWrapper = () => {
   };
 
   return (
-    <div className="p-8 w-full h-full flex gap-6">
-      <div className="flex flex-col gap-6 w-4/5 h-full">
+    <div className="p-8 w-full h-full flex gap-6 flex-col md:flex-row">
+      <div className="flex flex-col gap-6 md:w-2/3 xl:w-4/5 h-1/2 md:h-full">
         <div>
           <Filter setSelectedCategory={setSelectedCategory} />
         </div>
@@ -93,24 +93,26 @@ const MapsWrapper = () => {
           {activeEvent && (
             <Popup position={activeEvent.position}>
               {/* Popup Inner */}
-              <div className="text-xl">
+              <div className="text-base md:text-xl">
                 {/* Title */}
                 <h2 className="relative font-bold mb-2 flex items-center gap-2 text-[#6fcf97] after:absolute after:content-[''] after:w-[35%] after:h-[2px] after:bg-[#6fcf97] after:-bottom-[14px] after:left-0">
-                  <i className="fa-solid fa-scroll pt-[0.15rem] items-start text-2xl"></i>
+                  <i className="fa-solid fa-scroll pt-[0.15rem] items-start text-lg md:text-2xl"></i>
                   {activeEvent.title}
                 </h2>
               </div>
               {/* Description */}
-              <p className="text-white text-lg">{activeEvent.description}</p>
+              <p className="text-white text-sm md:text-lg p-0 md:p-2">
+                {activeEvent.description}
+              </p>
               <button
                 className="font-semibold !text-[#6fcf97] flex gap-2 items-center"
                 onClick={() => handleFavouriteClick(activeEvent.id)}
               >
-                <span className="flex items-center text-lg gap-2">
+                <span className="flex items-center text-sm md:text-lg gap-2">
                   {favourites.includes(activeEvent.id) ? (
                     <span>{fullStar} Unfavourite</span>
                   ) : (
-                    <span>{fullStar} Favourite</span>
+                    <span>{emptyStar} Favourite</span>
                   )}
                 </span>
               </button>
