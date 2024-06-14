@@ -6,6 +6,7 @@ import { Icon } from "leaflet";
 import eventsData from "../historicalEvents";
 import { useState } from "react";
 import FlyToMarker from "./FlyToMarker";
+import Filter from "./Filter";
 
 export interface HistoricalEvent {
   id: number;
@@ -32,6 +33,7 @@ const MapsWrapper = () => {
     iconAnchor: [12, 41],
   });
 
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [activeEvent, setActiveEvent] = useState<HistoricalEvent | null>(null);
   const [favourites, setFavourites] = useState<number[]>(() => {
     const savedFavourites = localStorage.getItem("favourites");
@@ -60,8 +62,10 @@ const MapsWrapper = () => {
 
   return (
     <div className="p-8 w-full h-full flex gap-6">
-      <div className="flex flex-col w-4/5 h-full">
-        <div className="h-12"></div>
+      <div className="flex flex-col gap-6 w-4/5 h-full">
+        <div>
+          <Filter setSelectedCategory={setSelectedCategory} />
+        </div>
 
         <MapContainer
           center={defaultPosition}
@@ -69,25 +73,30 @@ const MapsWrapper = () => {
           className="w-full h-full relative rounded-2xl border-2 border-[#363636]"
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {eventsData.map((event) => (
-            <Marker
-              key={event.id}
-              position={event.position}
-              icon={icon}
-              eventHandlers={{
-                click: () => {
-                  setActiveEvent(event);
-                },
-              }}
-            />
-          ))}
+          {eventsData
+            .filter(
+              (event) =>
+                !selectedCategory || event.category === selectedCategory
+            )
+            .map((event) => (
+              <Marker
+                key={event.id}
+                position={event.position}
+                icon={icon}
+                eventHandlers={{
+                  click: () => {
+                    setActiveEvent(event);
+                  },
+                }}
+              />
+            ))}
           {activeEvent && (
             <Popup position={activeEvent.position}>
               {/* Popup Inner */}
               <div className="text-xl">
                 {/* Title */}
-                {/* i.pt-[0.15rem].items-start.text-2xl */}
                 <h2 className="relative font-bold mb-2 flex items-center gap-2 text-[#6fcf97] after:absolute after:content-[''] after:w-[35%] after:h-[2px] after:bg-[#6fcf97] after:-bottom-[14px] after:left-0">
+                  <i className="fa-solid fa-scroll pt-[0.15rem] items-start text-2xl"></i>
                   {activeEvent.title}
                 </h2>
               </div>
